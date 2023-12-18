@@ -1,18 +1,36 @@
 package src.main.java;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
 
 /**
  * Class intended to emulate the functionality of the wc command
  */
 public class CCWCTool {
-    public static void main(String[] args) {
-        if("-c".equals(args[0])){
-            String filePath = args[1];
-            File file = new File(filePath);
-            if(!file.canRead()) return;
-            String result = countBytes(file) + " " + file.getName();
-            System.out.println(result);
+    private static final String BYTE_COUNT = "-c";
+    private static final String LINES_COUNT = "-l";
+
+    public static void main(String[] args) throws FileNotFoundException {
+        String option = args[0];
+        String filePath = args[1];
+        File file = null;
+        switch (option)
+        {
+            case BYTE_COUNT:
+                file = new File(filePath);
+                if(!file.canRead()) throw new FileNotFoundException();
+                System.out.println(buildResponse(countBytes(file), file));
+                break;
+
+            case LINES_COUNT:
+                file = new File(filePath);
+                if(!file.canRead()) throw new FileNotFoundException();
+                System.out.println(buildResponse(countLines(file), file));
+                break;
+
+            default:
+                System.out.println("Hello world");
         }
     }
 
@@ -23,5 +41,25 @@ public class CCWCTool {
      */
     private static long countBytes(File file){
         return file.length();
+    }
+
+    /**
+     * Method used to count the number of lines in a file
+     * @param file
+     * @return Number of lines in file
+     * @throws FileNotFoundException
+     */
+    private static long countLines(File file) throws FileNotFoundException {
+        Scanner scanner = new Scanner(file);
+        long count = 0;
+        while(scanner.hasNextLine()){
+            count++;
+            scanner.nextLine();
+        }
+        return count;
+    }
+
+    private static String buildResponse(long count, File file){
+        return count + " " + file.getName();
     }
 }
