@@ -10,6 +10,7 @@ import java.util.Scanner;
 public class CCWCTool {
     private static final String BYTE_COUNT = "-c";
     private static final String LINES_COUNT = "-l";
+    private static final String WORD_COUNT = "-w";
 
     public static void main(String[] args) throws FileNotFoundException {
         String option = args[0];
@@ -27,6 +28,12 @@ public class CCWCTool {
                 file = new File(filePath);
                 if(!file.canRead()) throw new FileNotFoundException();
                 System.out.println(buildResponse(countLines(file), file));
+                break;
+
+            case WORD_COUNT:
+                file = new File(filePath);
+                if(!file.canRead()) throw new FileNotFoundException();
+                System.out.println(buildResponse(countWords(file), file));
                 break;
 
             default:
@@ -55,6 +62,22 @@ public class CCWCTool {
         while(scanner.hasNextLine()){
             count++;
             scanner.nextLine();
+        }
+        return count;
+    }
+
+    /**
+     * this method will return the number of words ina  file
+     * @param file
+     * @return Number of words in file
+     * @throws FileNotFoundException
+     */
+    private static final long countWords(File file) throws FileNotFoundException{
+        Scanner scanner = new Scanner(file);
+        long count = 0;
+        while(scanner.hasNext()){
+            count++;
+            scanner.next();
         }
         return count;
     }
