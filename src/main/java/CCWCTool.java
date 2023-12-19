@@ -11,6 +11,7 @@ public class CCWCTool {
     private static final String BYTE_COUNT = "-c";
     private static final String LINES_COUNT = "-l";
     private static final String WORD_COUNT = "-w";
+    private static final String CHARACTER_COUNT = "-m";
 
     public static void main(String[] args) throws FileNotFoundException {
         String option = args[0];
@@ -36,8 +37,14 @@ public class CCWCTool {
                 System.out.println(buildResponse(countWords(file), file));
                 break;
 
+            case CHARACTER_COUNT:
+                file = new File(filePath);
+                if(!file.canRead()) throw new FileNotFoundException();
+                System.out.println(buildResponse(countCharacters(file), file));
+                break;
+
             default:
-                System.out.println("Hello world");
+                break;
         }
     }
 
@@ -72,12 +79,28 @@ public class CCWCTool {
      * @return Number of words in file
      * @throws FileNotFoundException
      */
-    private static final long countWords(File file) throws FileNotFoundException{
+    private static long countWords(File file) throws FileNotFoundException{
         Scanner scanner = new Scanner(file);
         long count = 0;
         while(scanner.hasNext()){
             count++;
             scanner.next();
+        }
+        return count;
+    }
+
+    /**
+     * Method to count number of characters in a file
+     * @param file
+     * @return Number of characters
+     * @throws FileNotFoundException
+     */dfhsfg
+    private static long countCharacters(File file) throws FileNotFoundException{
+        Scanner scanner = new Scanner(file);
+        long count = 0;
+        while(scanner.hasNextLine()){
+            String line = scanner.nextLine();
+            count += line.length();
         }
         return count;
     }
