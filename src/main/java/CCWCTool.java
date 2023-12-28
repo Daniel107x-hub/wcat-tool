@@ -12,10 +12,19 @@ public class CCWCTool {
     private static final String LINES_COUNT = "-l";
     private static final String WORD_COUNT = "-w";
     private static final String CHARACTER_COUNT = "-m";
+    private static final String DEFAULT = "D";
 
     public static void main(String[] args) throws FileNotFoundException {
-        String option = args[0];
-        String filePath = args[1];
+        String option = DEFAULT;
+        String filePath = null;
+        if(args.length > 1){
+            option = args[0];
+            filePath = args[1];
+        }else{
+            filePath = args[0];
+            Scanner scanner = new Scanner(System.in);
+            String text = scanner.toString();
+        }
         File file = null;
         switch (option)
         {
@@ -44,6 +53,13 @@ public class CCWCTool {
                 break;
 
             default:
+                file = new File(filePath);
+                if(!file.canRead()) throw new FileNotFoundException();
+                long bytes = countBytes(file);
+                long lines = countLines(file);
+                long words = countWords(file);
+                String result = bytes + " " + lines + " " + words + " " + file.getName();
+                System.out.println(result);
                 break;
         }
     }
@@ -94,13 +110,14 @@ public class CCWCTool {
      * @param file
      * @return Number of characters
      * @throws FileNotFoundException
-     */dfhsfg
+     */
     private static long countCharacters(File file) throws FileNotFoundException{
         Scanner scanner = new Scanner(file);
         long count = 0;
         while(scanner.hasNextLine()){
             String line = scanner.nextLine();
             count += line.length();
+            count += 2; // 2 characters for new line
         }
         return count;
     }
