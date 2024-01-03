@@ -1,7 +1,6 @@
 package src.main.java;
 
-import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.*;
 import java.util.Scanner;
 
 /**
@@ -14,115 +13,96 @@ public class CCWCTool {
     private static final String CHARACTER_COUNT = "-m";
     private static final String DEFAULT = "D";
 
-    public static void main(String[] args) throws FileNotFoundException {
+    public static void main(String[] args) throws IOException {
         String option = DEFAULT;
         String filePath = null;
-        if(args.length > 1){
+        InputStream stream = null;
+        if(args.length > 1) { // Option and file are provided
             option = args[0];
             filePath = args[1];
-        }else{
+            stream = new FileInputStream(filePath);
+        }else if(args.length == 1 && System.in.available() > 0){ // Only option provided and input comes from standard input
+            option = args[0];
+            stream = System.in;
+        }else if(args.length == 1){ // Only file is provided
             filePath = args[0];
-            Scanner scanner = new Scanner(System.in);
-            String text = scanner.toString();
+            stream = new FileInputStream(filePath);
+        }else{
+            throw new UnsupportedOperationException("Please provide appropriate arguments");
         }
-        File file = null;
+        InputStream bufferedStream = new BufferedInputStream(stream);git status
         switch (option)
         {
             case BYTE_COUNT:
-                file = new File(filePath);
-                if(!file.canRead()) throw new FileNotFoundException();
-                System.out.println(buildResponse(countBytes(file), file));
+                long byteCount = countBytes(bufferedStream);
+                System.out.println(byteCount + " " + filePath);
                 break;
 
             case LINES_COUNT:
-                file = new File(filePath);
-                if(!file.canRead()) throw new FileNotFoundException();
-                System.out.println(buildResponse(countLines(file), file));
+                long linesCount = countLines(bufferedStream);
+                System.out.println(linesCount + " " + filePath);
                 break;
 
             case WORD_COUNT:
-                file = new File(filePath);
-                if(!file.canRead()) throw new FileNotFoundException();
-                System.out.println(buildResponse(countWords(file), file));
+                long wordCount = countWords(bufferedStream);
+                System.out.println(wordCount + " " + filePath);
                 break;
 
             case CHARACTER_COUNT:
-                file = new File(filePath);
-                if(!file.canRead()) throw new FileNotFoundException();
-                System.out.println(buildResponse(countCharacters(file), file));
+                long charCount = countCharacters(bufferedStream);
+                System.out.println(charCount + " " + filePath);
                 break;
 
             default:
-                file = new File(filePath);
-                if(!file.canRead()) throw new FileNotFoundException();
-                long bytes = countBytes(file);
-                long lines = countLines(file);
-                long words = countWords(file);
-                String result = bytes + " " + lines + " " + words + " " + file.getName();
+                long bytes = countBytes(bufferedStream);
+                long lines = countLines(bufferedStream);
+                long words = countWords(bufferedStream);
+                String result = bytes + " " + lines + " " + words + " " + filePath;
                 System.out.println(result);
                 break;
         }
     }
 
-    /**
-     * This method will return the number of bytes in a file
-     * @param file
-     * @return Number of bytes in file
-     */
-    private static long countBytes(File file){
-        return file.length();
+    private static long countBytes(InputStream stream) throws IOException {
+        if(stream.markSupported()) stream.mark(Integer.MAX_VALUE);
+        long count = 0;
+        while(stream.read() != -1) count++;
+        stream.reset();
+        return count;
     }
 
-    /**
-     * Method used to count the number of lines in a file
-     * @param file
-     * @return Number of lines in file
-     * @throws FileNotFoundException
-     */
-    private static long countLines(File file) throws FileNotFoundException {
-        Scanner scanner = new Scanner(file);
+    private static long countLines(InputStream stream) throws IOException {
+        if(stream.markSupported()) stream.mark(Integer.MAX_VALUE);
+        Scanner scanner = new Scanner(stream);
         long count = 0;
         while(scanner.hasNextLine()){
             count++;
             scanner.nextLine();
         }
+        stream.reset();
         return count;
     }
 
-    /**
-     * this method will return the number of words ina  file
-     * @param file
-     * @return Number of words in file
-     * @throws FileNotFoundException
-     */
-    private static long countWords(File file) throws FileNotFoundException{
-        Scanner scanner = new Scanner(file);
+    private static long countWords(InputStream stream) throws IOException {
+        if(stream.markSupported()) stream.mark(Integer.MAX_VALUE);
+        Scanner scanner = new Scanner(stream);
         long count = 0;
         while(scanner.hasNext()){
             count++;
             scanner.next();
         }
+        stream.reset();
         return count;
     }
 
-    /**
-     * Method to count number of characters in a file
-     * @param file
-     * @return Number of characters
-     * @throws FileNotFoundException
-     */
-    private static long countCharacters(File file) throws FileNotFoundException{
-        Scanner scanner = new Scanner(file);
+    private static long countCharacters(InputStream stream) throws IOException {
+        if(stream.markSupported()) stream.mark(Integer.MAX_VALUE);
+        Reader reader = new InputStreamReader(stream);
         long count = 0;
-        while(scanner.hasNextLine()){
-            String line = scanner.nextLine();
-            count += line.length();
-            count += 2; // 2 characters for new line
+        while(reader.read() != -1){
+            count++;
         }
+        stream.reset();
         return count;
-    }
-
-    private static String buildResponse(long count, File file){
-        return count + " " + file.getName();
     }
 }
