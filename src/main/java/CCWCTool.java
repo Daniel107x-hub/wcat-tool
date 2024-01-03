@@ -30,7 +30,7 @@ public class CCWCTool {
         }else{
             throw new UnsupportedOperationException("Please provide appropriate arguments");
         }
-        InputStream bufferedStream = new BufferedInputStream(stream);git status
+        InputStream bufferedStream = new BufferedInputStream(stream);
         switch (option)
         {
             case BYTE_COUNT:
