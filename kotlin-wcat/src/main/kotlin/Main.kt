@@ -1,6 +1,7 @@
 package com.daniel107x
 
 import java.io.File
+import kotlin.io.path.fileSize
 
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
@@ -10,10 +11,11 @@ fun main(args: Array<String>) {
     val option = args[0]
     val fileName = args[1]
     val file = validateFile(fileName)
-    val result: Int = when(option){
+    val result = when(option){
         "-c" -> countBytesInFile(file)
         "-l" -> countLinesInFile(file)
         "-w" -> countWordsInFile(file)
+        "-m" -> countCharsInFile(file)
         else -> {
             println("No option found")
             return
@@ -28,10 +30,8 @@ fun validateFile(fileName: String): File{
     return file
 }
 
-fun countBytesInFile(file: File): Int {
-    var bytes = 0
-    file.forEachBlock { buffer, size -> bytes += size}
-    return bytes
+fun countBytesInFile(file: File): Long {
+    return file.toPath().fileSize()
 }
 
 fun countLinesInFile(file: File): Int {
@@ -41,7 +41,12 @@ fun countLinesInFile(file: File): Int {
 }
 
 fun countWordsInFile(file: File): Int {
-    var words = 0
-    file.forEachLine { line -> if(!line.isEmpty()) words += line.trim().split(" ").size }
-    return words
+    val text = file.readText();
+    val words = text.split("\\s+".toRegex()).filter { word -> word.isNotBlank() } // We use the regex \\s+ as space separator
+    return words.size
+}
+
+fun countCharsInFile(file: File): Int {
+    var text = file.readText()
+    return text.length
 }
