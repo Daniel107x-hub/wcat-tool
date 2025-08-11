@@ -1,16 +1,14 @@
 package com.daniel107x
 
 import java.io.File
-import kotlin.io.path.fileSize
 
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 fun main(args: Array<String>) {
-    if(args.isEmpty()) throw IllegalArgumentException("Please provide the file to be processed")
     val text: String
-    val fileName = args.filter { it.contains(".txt") }[0]
+    val fileName = args.filter { it.contains(".txt") }
     if(!fileName.isEmpty()) {
-        val file = validateFile(fileName)
+        val file = validateFile(fileName[0])
         text = file.readText()
     }else{
         text = readln()
@@ -34,9 +32,8 @@ fun main(args: Array<String>) {
             .append(result)
             .append(" ")
     }
-    builder.append(fileName)
+    if(!fileName.isEmpty()) builder.append(fileName)
     println(builder)
-
 }
 
 fun validateFile(fileName: String): File{
