@@ -6,22 +6,37 @@ import kotlin.io.path.fileSize
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 fun main(args: Array<String>) {
-    if(args.isEmpty()) throw IllegalArgumentException("No args provided")
-    if(args.size < 2) throw IllegalArgumentException("Please provide an option and the file to process")
-    val option = args[0]
-    val fileName = args[1]
-    val file = validateFile(fileName)
-    val result = when(option){
-        "-c" -> countBytesInFile(file)
-        "-l" -> countLinesInFile(file)
-        "-w" -> countWordsInFile(file)
-        "-m" -> countCharsInFile(file)
-        else -> {
-            println("No option found")
-            return
-        }
+    if(args.isEmpty()) throw IllegalArgumentException("Please provide the file to be processed")
+    val text: String
+    val fileName = args.filter { it.contains(".txt") }[0]
+    if(!fileName.isEmpty()) {
+        val file = validateFile(fileName)
+        text = file.readText()
+    }else{
+        text = readln()
     }
-    println("$result $fileName")
+
+    var options = args.filter { arg -> arg.contains("-") && arg.length == 2 }
+    if(options.isEmpty()) options = listOf("-l", "-w", "-c")
+    val builder = StringBuilder()
+    options.forEach { option ->
+        val result = when(option){
+            "-c" -> countBytes(text)
+            "-l" -> countLines(text)
+            "-w" -> countWords(text)
+            "-m" -> countChars(text)
+            else -> {
+                println("No option found")
+                return
+            }
+        }
+        builder
+            .append(result)
+            .append(" ")
+    }
+    builder.append(fileName)
+    println(builder)
+
 }
 
 fun validateFile(fileName: String): File{
@@ -30,23 +45,19 @@ fun validateFile(fileName: String): File{
     return file
 }
 
-fun countBytesInFile(file: File): Long {
-    return file.toPath().fileSize()
+fun countBytes(text: String): Int {
+    return text.toByteArray().size
 }
 
-fun countLinesInFile(file: File): Int {
-    var lines = 0
-    file.forEachLine { line -> lines++ }
-    return lines
+fun countLines(text: String): Int {
+    return text.lines().size
 }
 
-fun countWordsInFile(file: File): Int {
-    val text = file.readText();
+fun countWords(text: String): Int {
     val words = text.split("\\s+".toRegex()).filter { word -> word.isNotBlank() } // We use the regex \\s+ as space separator
     return words.size
 }
 
-fun countCharsInFile(file: File): Int {
-    var text = file.readText()
+fun countChars(text: String): Int {
     return text.length
 }
