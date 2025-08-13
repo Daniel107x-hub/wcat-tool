@@ -9,7 +9,7 @@ A lightweight command-line tool written in Kotlin that replicates some functiona
 ## Usage
 
 ```bash
-./wcat [options] <filename>
+./kotlin-wcat [options] <filename>
 ````
 
 ### Options
@@ -23,13 +23,13 @@ A lightweight command-line tool written in Kotlin that replicates some functiona
 You can combine options:
 
 ```bash
-./wcat -c -w myfile.txt
+./kotlin-wcat -c -w myfile.txt
 ```
 
 ## Example
 
 ```bash
-./wcat -l -w example.txt
+./kotlin-wcat -l -w example.txt
 12  87
 ```
 
@@ -38,19 +38,22 @@ Output order follows the order of arguments passed.
 ## Build & Run
 
 Ensure you have [Kotlin](https://kotlinlang.org/docs/command-line.html) installed.
-
-To build and run:
-
+1. Execute the assembleDist task in gradle
 ```bash
-kotlinc Wcat.kt -include-runtime -d wcat.jar
-java -jar wcat.jar -l -w sample.txt
+./gradlew assembleDist 
 ```
+2. Execute the installDist task
+```bash
+./gradlew installDist 
+```
+3. Execute the tool from the `build/install/kotlin-wcat/bin/kotlin-wcat` path
 
 ## Project Structure
 
 ```
 .
 ├── Wcat.kt
+├── Main.kt
 └── README.md
 ```
 
