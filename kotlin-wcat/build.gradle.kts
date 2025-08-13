@@ -24,5 +24,5 @@ kotlin {
 }
 
 application {
-    mainClass = "com.daniel107x.Main"
+    mainClass = "com.daniel107x.MainKt"
 }

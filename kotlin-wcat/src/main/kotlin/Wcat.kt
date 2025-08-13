@@ -20,7 +20,9 @@ class Wcat: CliktCommand() {
             val file = validateFile(fileName.toString())
             text = file.readText()
         }else{
-            text = readln()
+            val lineReader = StringBuilder()
+            for(line in generateSequence(::readLine)) lineReader.appendLine(line)
+            text = lineReader.toString()
         }
         val isNoOptionSelected = !(lines || words || bytes || chars)
         val builder = StringBuilder()
